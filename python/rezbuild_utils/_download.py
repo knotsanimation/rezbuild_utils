@@ -10,6 +10,8 @@ from typing import Optional
 # TODO use progress package when available
 from rez.vendor.progress.bar import ChargingBar
 
+from ._io import extract_zip
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -121,3 +123,58 @@ def download_file(url: str, target_file: Path, use_cache: bool = False):
         LOGGER.info(f"creating cache from url {url} downloaded as {target_file} ...")
         cache_file = _create_cache(target_file, url)
         LOGGER.debug(f"cache file created at {cache_file}")
+
+
+def download_and_install_build(
+    url: str,
+    extract_reference_file_name: Optional[str],
+    use_cache: bool = False,
+) -> Path:
+    """
+    Download the given url
+
+    Can only be called during rez build.
+
+    Args:
+        url: url to download from, ensure it's a file.
+        extract_reference_file_name:
+            None if the file is not a zip that need extraction.
+            Else a file name contained in the zip file so its content can be moved
+            to the installation root.
+        use_cache: True to use the cached downloaded file. Will create it the first time.
+
+    Returns:
+        directory path where the files have been installed.
+    """
+    project_name = os.environ["REZ_BUILD_PROJECT_NAME"]
+    project_version = os.environ["REZ_BUILD_PROJECT_VERSION"]
+    project_install = Path(os.environ["REZ_BUILD_INSTALL_PATH"])
+
+    prefix = f"{project_name}-{project_version}-"
+    temp_folder = Path(tempfile.mkdtemp(prefix=prefix))
+
+    download_path = temp_folder / "downloaded.zip"
+
+    try:
+        LOGGER.info(f"downloading {url} to {download_path} ...")
+        download_file(url, download_path, use_cache=use_cache)
+
+        # transfer from local machine to build target path
+        LOGGER.info(f"copying {download_path.name} to {project_install} ...")
+        shutil.copy2(download_path, project_install)
+
+    except Exception as error:
+        # XXX: hack as progress bar doesn't add a new line if not finished
+        print("")
+        raise
+    finally:
+        LOGGER.info(f"removing temporary directory {temp_folder}")
+        shutil.rmtree(temp_folder)
+
+    zip_path = project_install / download_path.name
+
+    if extract_reference_file_name:
+        LOGGER.info(f"extracting {zip_path} ...")
+        extract_zip(zip_path, reference_file_name=extract_reference_file_name)
+
+    return project_install
