@@ -36,7 +36,7 @@ def copy_build_files(files: list[Path]):
             )
 
 
-def extract_zip(zip_path: Path, reference_file_name: str):
+def extract_zip(zip_path: Path, reference_file_expression: str):
     """
     Exract the given zip archive at its root, and move its content up at the root too.
 
@@ -50,11 +50,11 @@ def extract_zip(zip_path: Path, reference_file_name: str):
                 license.txt
                 app.exe
 
-    In the above example, you can use ``app.exe`` as reference file name.
+    In the above example, you can use ``**/app.exe`` as reference file name.
 
     Args:
         zip_path: path to an existing zip file on disk.
-        reference_file_name: file name with extension or glob patterns.
+        reference_file_expression: glob pattern that must match a file or a dir.
 
     Returns:
         root direcvtory the file can be found at
@@ -64,7 +64,7 @@ def extract_zip(zip_path: Path, reference_file_name: str):
         zip_file.extractall(extract_root)
     zip_path.unlink()
 
-    reference_file = list(extract_root.glob(f"**/{reference_file_name}"))[0]
+    reference_file = list(extract_root.glob(f"**/{reference_file_expression}"))[0]
     for file in reference_file.parent.glob("*"):
         file.rename(extract_root / file.name)
     # this will raise if not everything was moved

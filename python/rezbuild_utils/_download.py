@@ -151,7 +151,7 @@ def download_file(url: str, target_file: Path, use_cache: bool = False):
 
 def download_and_install_build(
     url: str,
-    extract_reference_file_name: Optional[str],
+    reference_file_expression: Optional[str],
     use_cache: bool = False,
 ) -> Path:
     """
@@ -161,9 +161,9 @@ def download_and_install_build(
 
     Args:
         url: url to download from, ensure it's a file.
-        extract_reference_file_name:
+        reference_file_expression:
             None if the file is not a zip that need extraction.
-            Else a file name contained in the zip file so its content can be moved
+            Else a glob expression to a file in the zip file so its content can be moved
             to the installation root.
         use_cache: True to use the cached downloaded file. Will create it the first time.
 
@@ -197,8 +197,8 @@ def download_and_install_build(
 
     zip_path = project_install / download_path.name
 
-    if extract_reference_file_name:
+    if reference_file_expression:
         LOGGER.info(f"extracting {zip_path} ...")
-        extract_zip(zip_path, reference_file_name=extract_reference_file_name)
+        extract_zip(zip_path, reference_file_expression=reference_file_expression)
 
     return project_install
