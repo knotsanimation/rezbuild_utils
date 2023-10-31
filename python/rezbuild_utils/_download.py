@@ -43,6 +43,9 @@ def _get_download_cache(source_url: str) -> Optional[Path]:
         return None
 
     cache_file = list(tempfolder.glob("*"))
+    if not cache_file:
+        return None
+
     # you must always have a single file inside, as defined in _create_cache
     return cache_file[0]
 
