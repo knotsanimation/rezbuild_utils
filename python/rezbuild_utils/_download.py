@@ -9,6 +9,7 @@ from typing import Optional
 
 # TODO use progress package when available
 from rez.vendor.progress.bar import ChargingBar
+from rez.vendor.progress.spinner import PixelSpinner
 
 from ._io import extract_zip
 
@@ -17,6 +18,32 @@ LOGGER = logging.getLogger(__name__)
 
 _DOWNLOAD_CACHE_ROOT = Path(tempfile.gettempdir()) / "rezbuild_utils-downloadcache"
 _DISABLE_CACHE_ENV_VAR = "REZBUILD_UTILS_DISABLE_DOWNLOAD_CACHE"
+
+
+class Progress:
+    def __init__(self):
+        self._widget_bar = ChargingBar("downloading")
+        self._widget_spin = PixelSpinner("downloading ")
+        self._initialized = False
+        self._active = self._widget_bar
+
+    def finish(self):
+        self._active.finish()
+
+    def show_progress(self, block_number, block_size, total_size):
+        if not self._initialized and total_size < 1:
+            self._active = self._widget_spin
+
+        if not self._initialized:
+            self._initialized = True
+
+        if self._active is self._widget_spin:
+            self._widget_spin.next()
+
+        elif self._active is self._widget_bar:
+            self._widget_bar.max = total_size
+            downloaded = block_number * block_size
+            self._widget_bar.goto(downloaded)
 
 
 def _hash_url(url: str) -> str:
@@ -111,15 +138,9 @@ def download_file(url: str, target_file: Path, use_cache: bool = False):
             shutil.copy2(cache_file, target_file)
             return
 
-    progress = ChargingBar("downloading")
+    progress = Progress()
 
-    def _show_progress(block_number, block_size, total_size):
-        progress.max = total_size
-        downloaded = block_number * block_size
-        progress.goto(downloaded)
-
-    progress.start()
-    urllib.request.urlretrieve(url, target_file, reporthook=_show_progress)
+    urllib.request.urlretrieve(url, target_file, reporthook=progress.show_progress)
     progress.finish()
 
     if use_cache:
