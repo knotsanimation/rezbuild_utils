@@ -153,6 +153,7 @@ def download_and_install_build(
     url: str,
     reference_file_expression: Optional[str],
     use_cache: bool = False,
+    install_dir_name=None,
 ) -> Path:
     """
     Download the given url
@@ -166,6 +167,9 @@ def download_and_install_build(
             Else a glob expression to a file in the zip file so its content can be moved
             to the installation root.
         use_cache: True to use the cached downloaded file. Will create it the first time.
+        install_dir_name:
+            optional name of the directory to put the extracted file in.
+            if not provided, files are extracted at the root.
 
     Returns:
         directory path where the files have been installed.
@@ -178,6 +182,11 @@ def download_and_install_build(
     temp_folder = Path(tempfile.mkdtemp(prefix=prefix))
 
     download_path = temp_folder / "downloaded.zip"
+    if install_dir_name:
+        zip_install_dir = project_install / install_dir_name
+        zip_install_dir.mkdir()
+    else:
+        zip_install_dir = project_install
 
     try:
         LOGGER.info(f"downloading {url} to {download_path} ...")
@@ -185,7 +194,7 @@ def download_and_install_build(
 
         # transfer from local machine to build target path
         LOGGER.info(f"copying {download_path.name} to {project_install} ...")
-        shutil.copy2(download_path, project_install)
+        shutil.copy2(download_path, zip_install_dir)
 
     except Exception as error:
         # XXX: hack as progress bar doesn't add a new line if not finished
@@ -195,10 +204,10 @@ def download_and_install_build(
         LOGGER.info(f"removing temporary directory {temp_folder}")
         shutil.rmtree(temp_folder)
 
-    zip_path = project_install / download_path.name
+    zip_path = zip_install_dir / download_path.name
 
     if reference_file_expression:
         LOGGER.info(f"extracting {zip_path} ...")
         extract_zip(zip_path, reference_file_expression=reference_file_expression)
 
-    return project_install
+    return zip_install_dir
