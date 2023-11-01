@@ -51,3 +51,15 @@ def extract_zip(zip_path: Path):
         zip_file.extractall(extract_root)
     zip_path.unlink()
     return extract_root
+
+
+def move_directory_content(src_directory: Path, target_directory: Path):
+    """
+    Move (NOT copy) all the files and directories in the source to the target.
+
+    Args:
+        src_directory: filesystem path to an existing directory
+        target_directory: filesystem path to an existing directory
+    """
+    for src_path in src_directory.glob("*"):
+        src_path.rename(target_directory / src_path.name)
