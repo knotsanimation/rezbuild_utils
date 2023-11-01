@@ -151,9 +151,9 @@ def download_file(url: str, target_file: Path, use_cache: bool = False):
 
 def download_and_install_build(
     url: str,
-    reference_file_expression: Optional[str],
+    install_dir_name: str,
+    extract_if_zip: bool = True,
     use_cache: bool = False,
-    install_dir_name=None,
 ) -> Path:
     """
     Download the given url
@@ -162,14 +162,10 @@ def download_and_install_build(
 
     Args:
         url: url to download from, ensure it's a file.
-        reference_file_expression:
-            None if the file is not a zip that need extraction.
-            Else a glob expression to a file in the zip file so its content can be moved
-            to the installation root.
-        use_cache: True to use the cached downloaded file. Will create it the first time.
         install_dir_name:
-            optional name of the directory to put the extracted file in.
-            if not provided, files are extracted at the root.
+           name of the directory to put the extracted file in.
+        extract_if_zip: if True automatically extract the file if it is a .zip
+        use_cache: True to use the cached downloaded file. Will create it the first time.
 
     Returns:
         directory path where the files have been installed.
@@ -182,11 +178,9 @@ def download_and_install_build(
     temp_folder = Path(tempfile.mkdtemp(prefix=prefix))
 
     download_path = temp_folder / "downloaded.zip"
-    if install_dir_name:
-        zip_install_dir = project_install / install_dir_name
-        zip_install_dir.mkdir()
-    else:
-        zip_install_dir = project_install
+
+    zip_install_dir = project_install / install_dir_name
+    zip_install_dir.mkdir()
 
     try:
         LOGGER.info(f"downloading {url} to {download_path} ...")
@@ -206,8 +200,8 @@ def download_and_install_build(
 
     zip_path = zip_install_dir / download_path.name
 
-    if reference_file_expression:
+    if extract_if_zip and zip_path.suffix == ".zip":
         LOGGER.info(f"extracting {zip_path} ...")
-        extract_zip(zip_path, reference_file_expression=reference_file_expression)
+        extract_zip(zip_path)
 
     return zip_install_dir

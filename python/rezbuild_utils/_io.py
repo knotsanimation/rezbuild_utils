@@ -36,37 +36,18 @@ def copy_build_files(files: list[Path]):
             )
 
 
-def extract_zip(zip_path: Path, reference_file_expression: str):
+def extract_zip(zip_path: Path):
     """
-    Exract the given zip archive at its root, and move its content up at the root too.
-
-    As an archive can have an arbitrary number of folder nested before finding the actual
-    content, you can provide a reference_file_name to find where the content lives ::
-
-        myarchive.zip
-        myarchive/
-            subfolder/
-                bin/
-                license.txt
-                app.exe
-
-    In the above example, you can use ``**/app.exe`` as reference file name.
+    Exract the given zip archive content in the directory it is in.
 
     Args:
         zip_path: path to an existing zip file on disk.
-        reference_file_expression: glob pattern that must match a file or a dir.
 
     Returns:
-        root direcvtory the file can be found at
+        root directory the extracted file can be found at
     """
     extract_root = zip_path.parent
     with zipfile.ZipFile(zip_path, "r") as zip_file:
         zip_file.extractall(extract_root)
     zip_path.unlink()
-
-    reference_file = list(extract_root.glob(f"**/{reference_file_expression}"))[0]
-    for file in reference_file.parent.glob("*"):
-        file.rename(extract_root / file.name)
-    # this will raise if not everything was moved
-    reference_file.parent.rmdir()
     return extract_root
