@@ -83,10 +83,11 @@ def install_pip_package(pip_package: str, python_version: str, target_dir: Path)
         )
 
         # XXX: we assume rez-pip always put pip packages in a python/ folder
-        python_content = list(pip_download_dir.glob("**/python/"))[0]
+        pip_packages_content = list(pip_download_dir.glob("**/python/"))
 
-        LOGGER.info(f"copying {python_content} to {target_dir} ...")
-        shutil.copytree(python_content, target_dir)
+        for pip_package_content in pip_packages_content:
+            LOGGER.info(f"copying {pip_package_content} to {target_dir} ...")
+            shutil.copytree(pip_package_content, target_dir, dirs_exist_ok=True)
 
     finally:
         LOGGER.debug(f"removing {pip_download_dir}")
