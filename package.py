@@ -1,6 +1,6 @@
 name = "rezbuild_utils"
 
-version = "2.1.0"
+version = "2.1.1"
 
 authors = ["Liam Collod"]
 
