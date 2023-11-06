@@ -4,12 +4,13 @@ import os
 import shutil
 import zipfile
 from pathlib import Path
+from typing import List
 
 
 LOGGER = logging.getLogger(__name__)
 
 
-def copy_build_files(files: list[Path]):
+def copy_build_files(files: List[Path]):
     """
     Copy file/directories from the source build directory to the build install path.
 
