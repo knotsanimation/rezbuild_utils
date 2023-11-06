@@ -14,14 +14,24 @@ private_build_requires = ["python-3+"]
 
 build_command = "python {root}/build.py"
 
+__test_command_base = (
+    "pytest-launcher {root}/python/tests"
+    " --config-file '${{PYTEST_CONFIG_FILE}}'"
+    " --log-cli-level '${{PYTEST_LOG_CLI_LEVEL}}'"
+)
+
 tests = {
-    "unit": {
-        "command": (
-            "pytest-launcher {root}/python/tests"
-            " --config-file '${{PYTEST_CONFIG_FILE}}'"
-            " --log-cli-level '${{PYTEST_LOG_CLI_LEVEL}}'"
-        ),
-        "requires": ["pytest", "pytest_utils"],
+    "unit-37": {
+        "command": __test_command_base,
+        "requires": ["python-3.7", "pytest", "pytest_utils"],
+    },
+    "unit-39": {
+        "command": __test_command_base,
+        "requires": ["python-3.9", "pytest", "pytest_utils"],
+    },
+    "unit-310": {
+        "command": __test_command_base,
+        "requires": ["python-3.10", "pytest", "pytest_utils"],
     },
 }
 
