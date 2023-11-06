@@ -3,12 +3,19 @@ import re
 import shutil
 import subprocess
 import tempfile
+from typing import List
+from typing import Optional
 from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
 
 
-def install_pip_package(pip_package: str, python_version: str, target_dir: Path):
+def install_pip_package(
+    pip_package: str,
+    python_version: str,
+    target_dir: Path,
+    pip_args: Optional[List[str]] = None,
+):
     """
     Install the given pip package AND its dependencies at the given location.
 
@@ -26,6 +33,7 @@ def install_pip_package(pip_package: str, python_version: str, target_dir: Path)
             specified like ``packageName==version``.
         python_version: version to use for python. can be a shortened variant like ``3.9``.
         target_dir: path to a non-existing directory.
+        pip_args: additional argument directly passed to pip
     """
 
     # find the latest corresponding full rez python version
@@ -65,22 +73,24 @@ def install_pip_package(pip_package: str, python_version: str, target_dir: Path)
             check=True,
         )
 
+        rez_pip_args = [
+            "rez",
+            "python",
+            "-m",
+            "rez_pip",
+            pip_package,
+            "--python-version",
+            f"=={python_version_f}",
+            "--prefix",
+            str(pip_download_dir),
+        ]
+        if pip_args:
+            rez_pip_args += ["--"]
+            rez_pip_args += pip_args
+
         # XXX: we assume rez-pip2 is installed in rez own venv
         LOGGER.debug(f"installing {pip_package} to {pip_download_dir} ...")
-        subprocess.run(
-            [
-                "rez",
-                "python",
-                "-m",
-                "rez_pip",
-                pip_package,
-                "--python-version",
-                f"=={python_version_f}",
-                "--prefix",
-                str(pip_download_dir),
-            ],
-            check=True,
-        )
+        subprocess.run(rez_pip_args, check=True)
 
         # XXX: we assume rez-pip always put pip packages in a python/ folder
         pip_packages_content = list(pip_download_dir.glob("**/python/"))
