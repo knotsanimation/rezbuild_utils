@@ -1,4 +1,3 @@
-import distutils.dir_util
 import logging
 import os
 import shutil
@@ -31,9 +30,9 @@ def copy_build_files(files: List[Path]):
         if file.is_file():
             shutil.copy2(file, target_dir)
         else:
-            distutils.dir_util.copy_tree(
-                str(file),
-                str(target_dir / file.name),
+            shutil.copytree(
+                file,
+                target_dir / file.name,
             )
 
 
