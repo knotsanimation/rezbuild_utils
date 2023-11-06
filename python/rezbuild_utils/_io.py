@@ -53,13 +53,21 @@ def extract_zip(zip_path: Path):
     return extract_root
 
 
-def move_directory_content(src_directory: Path, target_directory: Path):
+def move_directory_content(
+    src_directory: Path,
+    target_directory: Path,
+    exists_ok: bool = False,
+):
     """
     Move (NOT copy) all the files and directories in the source to the target.
 
     Args:
         src_directory: filesystem path to an existing directory
         target_directory: filesystem path to an existing directory
+        exists_ok: True to ignore if the target file already exists, else will raise en error.
     """
     for src_path in src_directory.glob("*"):
-        src_path.rename(target_directory / src_path.name)
+        target = target_directory / src_path.name
+        if target.exists() and exists_ok:
+            continue
+        src_path.rename(target)
