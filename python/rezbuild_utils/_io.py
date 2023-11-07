@@ -57,6 +57,7 @@ def move_directory_content(
     src_directory: Path,
     target_directory: Path,
     exists_ok: bool = False,
+    recursive: bool = True,
 ):
     """
     Move (NOT copy) all the files and directories in the source to the target.
@@ -65,9 +66,15 @@ def move_directory_content(
         src_directory: filesystem path to an existing directory
         target_directory: filesystem path to an existing directory
         exists_ok: True to ignore if the target file already exists, else will raise en error.
+        recursive:
+            True to also process all subdirectory recursively to not miss any files.
     """
     for src_path in src_directory.glob("*"):
         target = target_directory / src_path.name
         if target.exists() and exists_ok:
+            if src_path.is_dir() and recursive:
+                move_directory_content(src_path, target, exists_ok=True, recursive=True)
             continue
         src_path.rename(target)
+        if src_path.is_dir() and recursive:
+            move_directory_content(src_path, target, exists_ok=True, recursive=True)
