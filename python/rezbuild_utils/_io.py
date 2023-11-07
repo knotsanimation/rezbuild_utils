@@ -75,6 +75,9 @@ def move_directory_content(
             if src_path.is_dir() and recursive:
                 move_directory_content(src_path, target, exists_ok=True, recursive=True)
             continue
-        src_path.rename(target)
+        if target.exists():
+            raise FileExistsError(f"File already exists on disk: <{target}>")
+        # use shutil instead of os.rename to handle move between disks
+        shutil.move(src_path, target)
         if src_path.is_dir() and recursive:
             move_directory_content(src_path, target, exists_ok=True, recursive=True)
