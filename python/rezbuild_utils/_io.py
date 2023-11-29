@@ -4,6 +4,8 @@ import shutil
 from pathlib import Path
 from typing import List
 
+from pythonning.filesystem import set_path_read_only
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,3 +35,19 @@ def copy_build_files(files: List[Path]):
                 file,
                 target_dir / file.name,
             )
+
+
+def set_installed_path_read_only() -> list[Path]:
+    """
+    Set recursively all path in the rez build install dir to read-only (including directories).
+
+    Returns:
+        list of path that have been set to read-only
+    """
+    install_dir = Path(os.environ["REZ_BUILD_INSTALL_PATH"])
+    installed_files = list(install_dir.rglob("*"))
+
+    for file_path in installed_files:
+        set_path_read_only(file_path)
+
+    return installed_files

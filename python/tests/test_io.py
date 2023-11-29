@@ -1,9 +1,11 @@
 import logging
+import shutil
 from pathlib import Path
 
 import pytest
 
 from rezbuild_utils._io import copy_build_files
+from rezbuild_utils._io import set_installed_path_read_only
 
 
 LOGGER = logging.getLogger(__name__)
@@ -23,3 +25,26 @@ def test_copy_build_files(tmp_path: Path, data_root_dir: Path, monkeypatch):
 
     with pytest.raises(FileExistsError):
         copy_build_files([Path("./somedir/"), Path("./foo.py")])
+
+
+def test_set_installed_files_read_only(
+    tmp_path: Path,
+    data_root_dir: Path,
+    monkeypatch,
+):
+    install_dir = tmp_path / "install"
+
+    monkeypatch.setenv("REZ_BUILD_INSTALL_PATH", str(install_dir))
+
+    src_dir = data_root_dir / "setreadonly01"
+    shutil.copytree(src_dir, install_dir)
+
+    set_installed_path_read_only()
+
+    test_file1 = install_dir / "foo.py"
+    with pytest.raises(PermissionError):
+        test_file1.unlink()
+
+    test_file2 = install_dir / "somedir" / "file.py"
+    with pytest.raises(PermissionError):
+        test_file2.unlink()
