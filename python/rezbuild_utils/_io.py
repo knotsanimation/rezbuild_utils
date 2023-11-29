@@ -1,7 +1,6 @@
 import logging
 import os
 import shutil
-import zipfile
 from pathlib import Path
 from typing import List
 
@@ -34,50 +33,3 @@ def copy_build_files(files: List[Path]):
                 file,
                 target_dir / file.name,
             )
-
-
-def extract_zip(zip_path: Path):
-    """
-    Exract the given zip archive content in the directory it is in.
-
-    Args:
-        zip_path: path to an existing zip file on disk.
-
-    Returns:
-        root directory the extracted file can be found at
-    """
-    extract_root = zip_path.parent
-    with zipfile.ZipFile(zip_path, "r") as zip_file:
-        zip_file.extractall(extract_root)
-    zip_path.unlink()
-    return extract_root
-
-
-def move_directory_content(
-    src_directory: Path,
-    target_directory: Path,
-    exists_ok: bool = False,
-    recursive: bool = True,
-):
-    """
-    Move (NOT copy) all the files and directories in the source to the target.
-
-    Args:
-        src_directory: filesystem path to an existing directory
-        target_directory: filesystem path to an existing directory
-        exists_ok: True to ignore if the target file already exists, else will raise en error.
-        recursive:
-            True to also process all subdirectory recursively to not miss any files.
-    """
-    for src_path in src_directory.glob("*"):
-        target = target_directory / src_path.name
-        if target.exists() and exists_ok:
-            if src_path.is_dir() and recursive:
-                move_directory_content(src_path, target, exists_ok=True, recursive=True)
-            continue
-        if target.exists():
-            raise FileExistsError(f"File already exists on disk: <{target}>")
-        # use shutil instead of os.rename to handle move between disks
-        shutil.move(src_path, target)
-        if src_path.is_dir() and recursive:
-            move_directory_content(src_path, target, exists_ok=True, recursive=True)
