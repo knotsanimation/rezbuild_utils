@@ -8,11 +8,17 @@ description = "Provide utilities to build rez packages."
 
 uuid = "5971c4a79d0741c2a2038e202cd6a897"
 
-requires = [
-    "python-3+",
-    "rez",
-    "pythonning",
-]
+
+@early()
+def requires():
+    base = ["python-3+"]
+    if building:
+        return base
+    return base + [
+        "rez",
+        "pythonning",
+    ]
+
 
 private_build_requires = ["python-3+"]
 
