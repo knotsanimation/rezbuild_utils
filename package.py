@@ -1,6 +1,6 @@
 name = "rezbuild_utils"
 
-version = "2.6.1"
+version = "2.6.2"
 
 authors = ["Liam Collod"]
 
@@ -46,6 +46,8 @@ tests = {
         "requires": ["python-3.10", "pytest", "pytest_utils"],
     },
 }
+
+cachable = True
 
 tools = []
 
