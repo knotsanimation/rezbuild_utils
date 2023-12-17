@@ -4,41 +4,32 @@ import shutil
 import tempfile
 from pathlib import Path
 
-# TODO use progress package when available
-from rez.vendor.progress.bar import ChargingBar
-from rez.vendor.progress.spinner import PixelSpinner
-
 from pythonning.web import download_file
 from pythonning.filesystem import extract_zip
+from pythonning.progress import ProgressBar
 
 
 LOGGER = logging.getLogger(__name__)
 
 
-class Progress:
-    def __init__(self):
-        self._widget_bar = ChargingBar("downloading")
-        self._widget_spin = PixelSpinner("downloading ")
-        self._initialized = False
-        self._active = self._widget_bar
+class DownloadProgressBar(ProgressBar):
+    byte_to_MB = 9.5367e-7
 
-    def finish(self):
-        self._active.finish()
+    def __init__(self):
+        super().__init__(
+            prefix="downloading",
+            suffix="[{bar_index:<2.1f}MB/{bar_max:.1f}MB] elapsed {elapsed_time:.2f}s",
+        )
 
     def show_progress(self, block_number, block_size, total_size):
-        if not self._initialized and total_size < 1:
-            self._active = self._widget_spin
-
-        if not self._initialized:
-            self._initialized = True
-
-        if self._active is self._widget_spin:
-            self._widget_spin.next()
-
-        elif self._active is self._widget_bar:
-            self._widget_bar.max = total_size
+        if total_size < 1:
+            self.update()
+        else:
             downloaded = block_number * block_size
-            self._widget_bar.goto(downloaded)
+            self.set_progress(
+                total_progress=downloaded * self.byte_to_MB,
+                new_maximum=total_size * self.byte_to_MB,
+            )
 
 
 def download_and_install_build(
@@ -75,8 +66,8 @@ def download_and_install_build(
     zip_install_dir.mkdir()
 
     try:
-        progress = Progress()
-
+        progress = DownloadProgressBar()
+        progress.start()
         LOGGER.info(f"downloading {url} to {download_path} ...")
         download_file(
             url,
@@ -84,7 +75,7 @@ def download_and_install_build(
             use_cache=use_cache,
             step_callback=progress.show_progress,
         )
-        progress.finish()
+        progress.end()
 
         # transfer from local machine to build target path
         LOGGER.info(f"copying {download_path.name} to {project_install} ...")
