@@ -6,10 +6,14 @@ from typing import List
 
 from pythonning.filesystem import set_path_read_only
 from pythonning.filesystem import copytree
+from pythonning.filesystem import copyfile
+from pythonning.filesystem import extract_zip
 from pythonning.progress import ProgressBar
 
 
 LOGGER = logging.getLogger(__name__)
+
+byte_to_MB = 9.5367e-7
 
 
 def copy_build_files(files: List[Path]):
@@ -96,3 +100,60 @@ def clear_build_dir():
     shutil.rmtree(build_dir, ignore_errors=True)
     LOGGER.debug(f"creating {build_dir} again")
     build_dir.mkdir()
+
+
+def copy_and_install_zip(
+    zip_path: Path,
+    dir_name: str,
+    show_progress: bool = True,
+    use_cache: bool = True,
+) -> Path:
+    """
+    Copy the given zip to the build directory and extract it to the given directory name.
+
+    A progress bar can be displayed for the copy operation (and not the extraction).
+
+    Args:
+        zip_path: filesystem path to an existing .zip file
+        dir_name: name of the directory to extract the zip content in
+        show_progress: True to show a progress bar in the console.
+        use_cache:
+            True to cache the source zip locally. This might reduce build time
+            when the zip is stored on slow network drives and you need to trigger
+            the build multiple times in a short period.
+
+
+    Returns:
+        the path of the directory that contain the extracted zip content
+        filesystem path to an existing directory.
+    """
+    build_dir = Path(os.environ["REZ_BUILD_INSTALL_PATH"])
+    target_dir = build_dir / dir_name
+    target_dir.mkdir()
+
+    target_path = target_dir / zip_path.name
+
+    progress = None
+    if show_progress:
+        progress = ProgressBar(
+            prefix=f"copying {zip_path.name}",
+            suffix="[{bar_index:.2f}MB/{bar_max:.2f}MB] elapsed {elapsed_time:.2f}s",
+        )
+
+    def _callback(_chunk: int, _chunk_size: int, _total: int):
+        if show_progress:
+            progress.set_progress(_chunk * byte_to_MB, new_maximum=_total * byte_to_MB)
+
+    LOGGER.info(f"copying <{zip_path}> to <{target_path}> ...")
+    progress.start() if progress else None
+    copyfile(
+        zip_path,
+        target_path,
+        callback=_callback,
+        use_cache=use_cache,
+    )
+    progress.end() if progress else None
+
+    LOGGER.info(f"extracting <{target_path}>")
+    extract_zip(target_path, remove_zip=True)
+    return target_dir
