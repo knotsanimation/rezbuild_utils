@@ -5,6 +5,7 @@ from pythonning.web import download_file
 from ._io import copy_build_files
 from ._io import set_installed_path_read_only
 from ._io import copytree_to_build
+from ._io import clear_build_dir
 from ._download import download_and_install_build
 from ._package import preserve_build_attributes
 from ._pip import install_pip_package
