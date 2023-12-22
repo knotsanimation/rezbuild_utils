@@ -82,3 +82,17 @@ def set_installed_path_read_only() -> list[Path]:
         set_path_read_only(file_path)
 
     return installed_files
+
+
+def clear_build_dir():
+    """
+    Remove the content of the build installation directory.
+    """
+    build_dir = Path(os.environ["REZ_BUILD_INSTALL_PATH"])
+    if not list(build_dir.glob("*")):
+        return
+
+    LOGGER.debug(f"removing {build_dir}")
+    shutil.rmtree(build_dir, ignore_errors=True)
+    LOGGER.debug(f"creating {build_dir} again")
+    build_dir.mkdir()
