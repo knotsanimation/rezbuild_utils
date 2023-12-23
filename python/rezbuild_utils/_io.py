@@ -3,6 +3,7 @@ import os
 import shutil
 from pathlib import Path
 from typing import List
+from typing import Optional
 
 from pythonning.filesystem import set_path_read_only
 from pythonning.filesystem import copytree
@@ -104,7 +105,7 @@ def clear_build_dir():
 
 def copy_and_install_zip(
     zip_path: Path,
-    dir_name: str,
+    dir_name: Optional[str],
     show_progress: bool = True,
     use_cache: bool = True,
 ) -> Path:
@@ -115,7 +116,9 @@ def copy_and_install_zip(
 
     Args:
         zip_path: filesystem path to an existing .zip file
-        dir_name: name of the directory to extract the zip content in
+        dir_name:
+            name of the directory to extract the zip content in.
+            If None just extracts at the root of the build dir.
         show_progress: True to show a progress bar in the console.
         use_cache:
             True to cache the source zip locally. This might reduce build time
@@ -128,8 +131,9 @@ def copy_and_install_zip(
         filesystem path to an existing directory.
     """
     build_dir = Path(os.environ["REZ_BUILD_INSTALL_PATH"])
-    target_dir = build_dir / dir_name
-    target_dir.mkdir()
+    target_dir = build_dir / dir_name if dir_name else build_dir
+    if not target_dir.exists():
+        target_dir.mkdir()
 
     target_path = target_dir / zip_path.name
 
