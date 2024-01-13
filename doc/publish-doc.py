@@ -28,7 +28,14 @@ def main():
         encoding="utf-8",
     )
 
-    commit_msg = f"chore(doc): copied to gh-pages\n\nfrom commit {git_last_commit}"
+    git_current_branch = str(
+        subprocess.check_output(
+            ["git", "branch", "--show-current"], cwd=ROOTDIR, universal_newlines=False
+        ),
+        encoding="utf-8",
+    )
+
+    commit_msg = f"chore(doc): copied to gh-pages\n\nfrom commit {git_last_commit} on branch {git_current_branch}"
 
     shutil.rmtree(BUILDIR, ignore_errors=True)
 
@@ -36,22 +43,27 @@ def main():
     subprocess.check_call(
         ["git", "worktree", "add", str(HTMLDIR), "gh-pages"], cwd=ROOTDIR
     )
-    print("calling sphinx-build ...")
-    subprocess.check_call(
-        [
-            "sphinx-build",
-            "-M",
-            "html",
-            str(SRCDIR),
-            str(BUILDIR),
-        ]
-        + sys.argv[1:],
-        cwd=THISDIR,
-    )
-    subprocess.check_call(["git", "add", "--all"], cwd=HTMLDIR)
-    subprocess.check_call(["git", "commit", "-m", commit_msg], cwd=HTMLDIR)
-    # subprocess.check_call(["git", "push", "origin", "gh-pages"], cwd=HTMLDIR)
-    subprocess.check_call(["git", "worktree", "remove", str(HTMLDIR)], cwd=HTMLDIR)
+    try:
+        subprocess.check_call(["git", "rm", "-r", "*"], cwd=HTMLDIR)
+        print("calling sphinx-build ...")
+        subprocess.check_call(
+            [
+                "sphinx-build",
+                "-M",
+                "html",
+                str(SRCDIR),
+                str(BUILDIR),
+            ]
+            + sys.argv[1:],
+            cwd=THISDIR,
+        )
+        subprocess.check_call(["git", "add", "--all"], cwd=HTMLDIR)
+        subprocess.check_call(["git", "commit", "-m", commit_msg], cwd=HTMLDIR)
+        # subprocess.check_call(["git", "push", "origin", "gh-pages"], cwd=HTMLDIR)
+    finally:
+        # ``git worktree remove`` is supposed to delete it but fail, so we do it in python
+        shutil.rmtree(HTMLDIR, ignore_errors=True)
+        subprocess.check_call(["git", "worktree", "prune"], cwd=ROOTDIR)
 
 
 if __name__ == "__main__":
