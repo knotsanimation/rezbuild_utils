@@ -28,3 +28,7 @@ poetry.lock
 # rez specific
 build/
 build.rxt
+
+# documenation
+!doc/build
+doc/build/doctrees/
