@@ -34,8 +34,7 @@ class BuildPackageVersion:
 
     It assumes a package with a traditional semver versioning is being built.
 
-    Knots specificities
-    ==================
+    **Knots specificities:**
 
     * The **extra-patch** is an additional "sub-patch" token for rez versioning of vendor packages.
     """

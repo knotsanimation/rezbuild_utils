@@ -13,6 +13,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 class DownloadProgressBar(ProgressBar):
+    """
+    A progress bar for download, expressed in MB units.
+    """
+
     byte_to_MB = 9.5367e-7
 
     def __init__(self):
@@ -22,6 +26,16 @@ class DownloadProgressBar(ProgressBar):
         )
 
     def show_progress(self, block_number, block_size, total_size):
+        """
+        To be used as callback during a download operation.
+
+        Args:
+            block_number: current block being downloaded, variable over time.
+            block_size: size of each download block, static over time.
+            total_size:
+                total size of all the block to download, static over time.
+                might not be provided which correspond to a value < 1.
+        """
         if total_size < 1:
             self.update()
         else:
