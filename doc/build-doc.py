@@ -4,12 +4,15 @@ from pathlib import Path
 
 THISDIR = Path(__file__).parent
 
+SRCDIR = THISDIR / "source"
+BUILDIR = THISDIR / "build"
+
 COMMAND = [
     "sphinx-build",
     "-M",
     "html",
-    str(THISDIR / "source"),
-    str(THISDIR / "build"),
+    str(SRCDIR),
+    str(BUILDIR),
 ]
 COMMAND += sys.argv[1:]
 
