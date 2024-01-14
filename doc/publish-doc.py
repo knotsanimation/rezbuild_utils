@@ -41,7 +41,9 @@ def main():
     )
     try:
         # ensure to start clean at each build
-        subprocess.check_call(["git", "rm", "--quiet", "-r", "*"], cwd=HTMLDIR)
+        subprocess.check_call(
+            ["git", "rm", "--quiet", "--ignore-unmatch", "-r", "*"], cwd=HTMLDIR
+        )
         print("calling sphinx-build ...")
         subprocess.check_call(
             [
@@ -55,7 +57,7 @@ def main():
             cwd=THISDIR,
         )
 
-        changes = gitget(["diff", "--exit-code"], cwd=HTMLDIR)
+        changes = gitget(["status", "--porcelain"], cwd=HTMLDIR)
         if not changes:
             print("nothing to commit, returning ...")
             return
