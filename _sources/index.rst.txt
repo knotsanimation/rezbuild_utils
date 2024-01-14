@@ -11,6 +11,8 @@ rezbuild_utils
 It was designed to be called during the rez-build process which is implied
 to executes a python script (the build process could execute anything that start from the command line).
 
+test
+
 Contents
 --------
 
