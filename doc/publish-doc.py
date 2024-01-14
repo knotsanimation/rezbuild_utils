@@ -81,6 +81,8 @@ def main():
             print("nothing to commit, returning ...")
             return
 
+        print(changes)
+
         subprocess.check_call(["git", "add", "--all"], cwd=HTMLDIR)
         subprocess.check_call(["git", "commit", "-m", commit_msg], cwd=HTMLDIR)
         subprocess.check_call(["git", "push", "origin", "gh-pages"], cwd=HTMLDIR)
