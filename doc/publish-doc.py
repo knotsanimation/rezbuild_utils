@@ -3,6 +3,7 @@ build and publish the documentation to GitHub
 
 we build the documentation and copy it to the gh-pages branch using git worktree.
 """
+import re
 import shutil
 import subprocess
 import sys
@@ -28,9 +29,21 @@ def main():
     git_status = gitget(["status", "--porcelain"], cwd=ROOTDIR)
     git_last_commit = gitget(["rev-parse", "HEAD"], cwd=ROOTDIR)
     git_current_branch = gitget(["branch", "--show-current"], cwd=ROOTDIR)
+    git_remote_status = gitget(["status", "--short", "--b", "--porcelain"], cwd=ROOTDIR)
 
     if git_status:
         raise RuntimeError(f"Uncommited changes found: {git_status}.")
+
+    if git_current_branch != "main":
+        raise RuntimeError(
+            f"current git branch is `{git_current_branch}`, expected `main`."
+        )
+
+    if re.search(rf"## {git_current_branch}.+\[ahead", git_remote_status):
+        raise RuntimeError("current git branch is ahead of its remote.")
+
+    if re.search(rf"## {git_current_branch}.+\[behind", git_remote_status):
+        raise RuntimeError("current git branch is behind of its remote. ")
 
     commit_msg = (
         f"chore(doc): sphinx build copied to gh-pages\n\n"
