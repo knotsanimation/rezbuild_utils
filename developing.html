@@ -228,6 +228,26 @@ python<span class="w"> </span>./doc/build-doc.py<span class="w"> </span>-a
 </pre></div>
 </div>
 <p>The documentation can then be found in <code class="docutils literal notranslate"><span class="pre">./doc/build/html/index.html</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You only need to rez-build/rez-env when you change python file of rezbuild_utils.
+You can just successively call <code class="docutils literal notranslate"><span class="pre">build-doc.py</span></code> when only the doc is modified.</p>
+</div>
+<p><strong>Publish the documentation</strong></p>
+<p>Deploy the documentation to GitHub pages.</p>
+<p>You must:</p>
+<ul class="simple">
+<li><p>be on main branch</p></li>
+<li><p>have no uncommited changes</p></li>
+<li><p>have pushed the branch</p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>.
+<span class="c1"># ensure package is built first (necessary for autodoc)</span>
+rez-build<span class="w"> </span>-i
+rez-env<span class="w"> </span>sphinx<span class="w"> </span>furo<span class="w"> </span>rezbuild_utils
+python<span class="w"> </span>./doc/publish-doc.py
+</pre></div>
+</div>
 </section>
 </section>
 
