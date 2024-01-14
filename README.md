@@ -18,7 +18,7 @@ work in the context of a rez infrastructure.
 
 https://knotsanimation.github.io/rezbuild_utils/
 
-**local build**
+## local build
 
 ```shell
 cd .
@@ -29,3 +29,20 @@ python ./doc/build-doc.py -a
 ```
 
 The documentation can then be found in `./doc/build/html/index.html`
+
+## publish
+
+Deploy the documentation to GitHub pages.
+
+You must:
+* be on main branch
+* have no uncommited changes
+* have pushed the branch
+
+```shell
+cd .
+# ensure package is built first (necessary for autodoc)
+rez-build -i
+rez-env sphinx furo rezbuild_utils
+python ./doc/publish-doc.py
+```
