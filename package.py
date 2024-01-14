@@ -26,6 +26,14 @@ private_build_requires = ["python-3+"]
 
 build_command = "python {root}/build.py"
 
+doc_publish_command = "python {root}/doc/publish-doc.py"
+
+doc_publish_requires = [
+    "python-3+",
+    "sphinx",
+    "furo",
+]
+
 __test_command_base = (
     "pytest-launcher {root}/python/tests"
     " --config-file '${{PYTEST_CONFIG_FILE}}'"
