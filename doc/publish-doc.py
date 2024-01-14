@@ -76,14 +76,16 @@ def main():
         if not NOJEKYLLFILE.exists():
             NOJEKYLLFILE.write_text("")
 
+        subprocess.check_call(["git", "add", "--all"], cwd=HTMLDIR)
+
         changes = gitget(["status", "--porcelain"], cwd=HTMLDIR)
         if not changes:
             print("nothing to commit, returning ...")
             return
 
+        print(f"changes:\n{'='*8}")
         print(changes)
 
-        subprocess.check_call(["git", "add", "--all"], cwd=HTMLDIR)
         subprocess.check_call(["git", "commit", "-m", commit_msg], cwd=HTMLDIR)
         subprocess.check_call(["git", "push", "origin", "gh-pages"], cwd=HTMLDIR)
     finally:
