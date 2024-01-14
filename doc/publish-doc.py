@@ -54,8 +54,13 @@ def main():
             + sys.argv[1:],
             cwd=THISDIR,
         )
+
+        changes = gitget(["diff", "--exit-code"], cwd=HTMLDIR)
+        if not changes:
+            print("nothing to commit, returning ...")
+            return
+
         subprocess.check_call(["git", "add", "--all"], cwd=HTMLDIR)
-        # commit could fail if there is nothing to commit (2 successive build without edit)
         subprocess.check_call(["git", "commit", "-m", commit_msg], cwd=HTMLDIR)
         # subprocess.check_call(["git", "push", "origin", "gh-pages"], cwd=HTMLDIR)
     finally:
