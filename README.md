@@ -6,16 +6,26 @@ Python library providing utilities to build rez packages.
 import rezbuild_utils
 help(rezbuild_utils)
 ```
-
 # prerequisites
 
-It is mostly expected to be used during a rez-build (and as such expecting
-the rez build environment variable to be set.)
+- python 3
+- this is a [rez](https://github.com/AcademySoftwareFoundation/rez) package made to
+work in the context of a rez infrastructure.
+- documentation need `git` to be deployed
 
-# tests
 
-Assuming the package has been build or deployed at least once :
+# documentation
+
+https://knotsanimation.github.io/rezbuild_utils/
+
+**local build**
 
 ```shell
-rez-test rezbuild_utils
+cd .
+# ensure package is built first (necessary for autodoc)
+rez-build -i
+rez-env sphinx furo rezbuild_utils
+python ./doc/build-doc.py -a
 ```
+
+The documentation can then be found in `./doc/build/html/index.html`
