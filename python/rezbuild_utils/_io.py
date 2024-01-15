@@ -17,17 +17,45 @@ LOGGER = logging.getLogger(__name__)
 byte_to_MB = 9.5367e-7
 
 
-def copy_build_files(files: List[Path]):
+def copy_build_files(files: List[Path], target_directory: Optional[list[str]] = None):
     """
-    Copy file/directories from the source build directory to the build install path.
+    Copy individual file/directories from the source build directory to the build install path.
+
+    Each path in file is copied individually so hierachy are not preserved.
+
+    Examples:
+
+        The following::
+
+            (file=["./python/myModule.py"], sub_directories=None)
+
+        correspond to::
+
+            {REZ_BUILD_SOURCE_PATH}/python/myModule.py`` > ``{REZ_BUILD_INSTALL_PATH}/myModule.py
+
+        The following::
+
+            ``(file=["./python/myModule.py"], sub_directories=["src", "demo"])``
+
+        correspond to::
+
+            {REZ_BUILD_SOURCE_PATH}/python/myModule.py`` > ``{REZ_BUILD_INSTALL_PATH}/src/demo/myModule.py
+
 
     Args:
         files:
-            list of path relative to the build source directory to copy.
+            list of absolute paths or paths relative to the build source directory, to copy.
             can be files or directory
+        target_directory:
+            destination directory to copy the file to relative to the build directory.
+            Expressed as list of directory names combined to a single path where the root is the left-most
+            name in the list.
     """
     source_dir = Path(os.environ["REZ_BUILD_SOURCE_PATH"])
     target_dir = Path(os.environ["REZ_BUILD_INSTALL_PATH"])
+    if target_directory:
+        target_dir = target_dir.joinpath(*target_directory)
+        os.makedirs(target_dir, exist_ok=True)
 
     for file in files:
         if not file.is_absolute():

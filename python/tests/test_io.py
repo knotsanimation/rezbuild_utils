@@ -1,4 +1,5 @@
 import logging
+import os
 import shutil
 from pathlib import Path
 
@@ -25,6 +26,43 @@ def test_copy_build_files(tmp_path: Path, data_root_dir: Path, monkeypatch):
 
     with pytest.raises(FileExistsError):
         copy_build_files([Path("./somedir/"), Path("./foo.py")])
+
+
+def test_copy_build_files_target_arg(tmp_path: Path, data_root_dir: Path, monkeypatch):
+    build_dir = tmp_path / "build"
+    build_dir.mkdir()
+    monkeypatch.setenv("REZ_BUILD_SOURCE_PATH", str(data_root_dir / "copybuildfiles01"))
+    monkeypatch.setenv("REZ_BUILD_INSTALL_PATH", str(build_dir))
+
+    copy_build_files(
+        [Path("./somedir/"), Path("./foo.py")], target_directory=["src", "demo"]
+    )
+
+    dst_dir = build_dir / "src" / "demo"
+
+    assert Path(dst_dir / "somedir").exists()
+    assert Path(dst_dir / "somedir" / "file.py").exists()
+    assert Path(dst_dir / "foo.py").exists()
+
+
+def test_copy_build_files_target_arg_exists(
+    tmp_path: Path, data_root_dir: Path, monkeypatch
+):
+    build_dir = tmp_path / "build"
+    build_dir.mkdir()
+    monkeypatch.setenv("REZ_BUILD_SOURCE_PATH", str(data_root_dir / "copybuildfiles01"))
+    monkeypatch.setenv("REZ_BUILD_INSTALL_PATH", str(build_dir))
+
+    dst_dir = build_dir / "src" / "demo"
+    os.makedirs(dst_dir)
+
+    copy_build_files(
+        [Path("./somedir/"), Path("./foo.py")], target_directory=["src", "demo"]
+    )
+
+    assert Path(dst_dir / "somedir").exists()
+    assert Path(dst_dir / "somedir" / "file.py").exists()
+    assert Path(dst_dir / "foo.py").exists()
 
 
 def test_set_installed_files_read_only(
