@@ -31,15 +31,15 @@ def copy_build_files(files: List[Path], target_directory: Optional[list[str]] = 
 
         correspond to::
 
-            {REZ_BUILD_SOURCE_PATH}/python/myModule.py`` > ``{REZ_BUILD_INSTALL_PATH}/myModule.py
+            {REZ_BUILD_SOURCE_PATH}/python/myModule.py > {REZ_BUILD_INSTALL_PATH}/myModule.py
 
         The following::
 
-            ``(file=["./python/myModule.py"], sub_directories=["src", "demo"])``
+            (file=["./python/myModule.py"], sub_directories=["src", "demo"])
 
         correspond to::
 
-            {REZ_BUILD_SOURCE_PATH}/python/myModule.py`` > ``{REZ_BUILD_INSTALL_PATH}/src/demo/myModule.py
+            {REZ_BUILD_SOURCE_PATH}/python/myModule.py > {REZ_BUILD_INSTALL_PATH}/src/demo/myModule.py
 
 
     Args:
