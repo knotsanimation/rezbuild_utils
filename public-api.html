@@ -339,12 +339,35 @@ filesystem path to an existing directory.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="rezbuild_utils.copy_build_files">
-<span class="sig-prename descclassname"><span class="pre">rezbuild_utils.</span></span><span class="sig-name descname"><span class="pre">copy_build_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rezbuild_utils.copy_build_files" title="Link to this definition">#</a></dt>
-<dd><p>Copy file/directories from the source build directory to the build install path.</p>
+<span class="sig-prename descclassname"><span class="pre">rezbuild_utils.</span></span><span class="sig-name descname"><span class="pre">copy_build_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rezbuild_utils.copy_build_files" title="Link to this definition">#</a></dt>
+<dd><p>Copy individual file/directories from the source build directory to the build install path.</p>
+<p>Each path in file is copied individually so hierachy are not preserved.</p>
+<p class="rubric">Examples</p>
+<p>The following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./python/myModule.py&quot;</span><span class="p">],</span> <span class="n">sub_directories</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>correspond to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{REZ_BUILD_SOURCE_PATH}/python/myModule.py`` &gt; ``{REZ_BUILD_INSTALL_PATH}/myModule.py
+</pre></div>
+</div>
+<p>The following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>``(file=[&quot;./python/myModule.py&quot;], sub_directories=[&quot;src&quot;, &quot;demo&quot;])``
+</pre></div>
+</div>
+<p>correspond to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{REZ_BUILD_SOURCE_PATH}/python/myModule.py`` &gt; ``{REZ_BUILD_INSTALL_PATH}/src/demo/myModule.py
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>files</strong> – list of path relative to the build source directory to copy.
-can be files or directory</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>files</strong> – list of absolute paths or paths relative to the build source directory, to copy.
+can be files or directory</p></li>
+<li><p><strong>target_directory</strong> – destination directory to copy the file to relative to the build directory.
+Expressed as list of directory names combined to a single path where the root is the left-most
+name in the list.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
