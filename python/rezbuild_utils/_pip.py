@@ -7,6 +7,8 @@ from typing import List
 from typing import Optional
 from pathlib import Path
 
+from pythonning.filesystem import rmtree
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -103,4 +105,4 @@ def install_pip_package(
 
     finally:
         LOGGER.debug(f"removing {pip_download_dir}")
-        shutil.rmtree(pip_download_dir)
+        rmtree(pip_download_dir)

@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List
 from typing import Optional
 
+from pythonning.filesystem import rmtree
 from pythonning.filesystem import set_path_read_only
 from pythonning.filesystem import copytree
 from pythonning.filesystem import copyfile
@@ -126,7 +127,7 @@ def clear_build_dir():
         return
 
     LOGGER.debug(f"removing '{build_dir}'")
-    shutil.rmtree(build_dir, ignore_errors=True)
+    rmtree(build_dir, ignore_errors=True)
     LOGGER.debug(f"creating '{build_dir}' again")
     build_dir.mkdir()
 

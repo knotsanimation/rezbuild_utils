@@ -6,6 +6,7 @@ from pathlib import Path
 
 from pythonning.web import download_file
 from pythonning.filesystem import extract_zip
+from pythonning.filesystem import rmtree
 from pythonning.progress import catch_download_progress
 
 
@@ -61,7 +62,7 @@ def download_and_install_build(
 
     finally:
         LOGGER.info(f"removing temporary directory '{temp_folder}'")
-        shutil.rmtree(temp_folder)
+        rmtree(temp_folder)
 
     zip_path = zip_install_dir / download_path.name
 
