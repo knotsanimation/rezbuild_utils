@@ -6,44 +6,10 @@ from pathlib import Path
 
 from pythonning.web import download_file
 from pythonning.filesystem import extract_zip
-from pythonning.progress import ProgressBar
+from pythonning.progress import catch_download_progress
 
 
 LOGGER = logging.getLogger(__name__)
-
-
-class DownloadProgressBar(ProgressBar):
-    """
-    A progress bar for download, expressed in MB units.
-    """
-
-    byte_to_MB = 9.5367e-7
-
-    def __init__(self):
-        super().__init__(
-            prefix="downloading",
-            suffix="[{bar_index:<2.1f}MB/{bar_max:.1f}MB] elapsed {elapsed_time:.2f}s",
-        )
-
-    def show_progress(self, block_number, block_size, total_size):
-        """
-        To be used as callback during a download operation.
-
-        Args:
-            block_number: current block being downloaded, variable over time.
-            block_size: size of each download block, static over time.
-            total_size:
-                total size of all the block to download, static over time.
-                might not be provided which correspond to a value < 1.
-        """
-        if total_size < 1:
-            self.update()
-        else:
-            downloaded = block_number * block_size
-            self.set_progress(
-                total_progress=downloaded * self.byte_to_MB,
-                new_maximum=total_size * self.byte_to_MB,
-            )
 
 
 def download_and_install_build(
@@ -80,25 +46,19 @@ def download_and_install_build(
     zip_install_dir.mkdir()
 
     try:
-        progress = DownloadProgressBar()
-        progress.start()
-        LOGGER.info(f"downloading {url} to {download_path} ...")
-        download_file(
-            url,
-            download_path,
-            use_cache=use_cache,
-            step_callback=progress.show_progress,
-        )
-        progress.end()
+        LOGGER.info(f"downloading '{url}' to '{download_path}' ...")
+        with catch_download_progress() as progress:
+            download_file(
+                url,
+                download_path,
+                use_cache=use_cache,
+                step_callback=progress.show_progress,
+            )
 
         # transfer from local machine to build target path
         LOGGER.info(f"copying {download_path.name} to {project_install} ...")
         shutil.copy2(download_path, zip_install_dir)
 
-    except Exception as error:
-        # XXX: hack as progress bar doesn't add a new line if not finished
-        print("")
-        raise
     finally:
         LOGGER.info(f"removing temporary directory {temp_folder}")
         shutil.rmtree(temp_folder)

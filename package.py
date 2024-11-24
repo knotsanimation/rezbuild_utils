@@ -17,7 +17,7 @@ def requires():
         else [
             "python-3+",
             "rez",
-            "pythonning-1.2+",
+            "pythonning-1.7+",
         ]
     )
 
