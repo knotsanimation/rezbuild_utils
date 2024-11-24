@@ -248,6 +248,9 @@
 <dd><p>Download a single file from the web at the given url and display download progress in terminal.</p>
 <p>You can cache the result when you know that you may call this function
 multiple time for the same url.</p>
+<p><strong>Tip to download Google Drive files:</strong></p>
+<p>Extract the ID from whatever url you got and replace it in the following:
+<code class="docutils literal notranslate"><span class="pre">https://drive.usercontent.google.com/download?id=YOURID&amp;export=download&amp;authuser=0&amp;confirm=t</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -348,15 +351,15 @@ filesystem path to an existing directory.</p>
 </pre></div>
 </div>
 <p>correspond to:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{REZ_BUILD_SOURCE_PATH}/python/myModule.py`` &gt; ``{REZ_BUILD_INSTALL_PATH}/myModule.py
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">REZ_BUILD_SOURCE_PATH</span><span class="p">}</span><span class="o">/</span><span class="n">python</span><span class="o">/</span><span class="n">myModule</span><span class="o">.</span><span class="n">py</span> <span class="o">&gt;</span> <span class="p">{</span><span class="n">REZ_BUILD_INSTALL_PATH</span><span class="p">}</span><span class="o">/</span><span class="n">myModule</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <p>The following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>``(file=[&quot;./python/myModule.py&quot;], sub_directories=[&quot;src&quot;, &quot;demo&quot;])``
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./python/myModule.py&quot;</span><span class="p">],</span> <span class="n">sub_directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;demo&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>correspond to:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{REZ_BUILD_SOURCE_PATH}/python/myModule.py`` &gt; ``{REZ_BUILD_INSTALL_PATH}/src/demo/myModule.py
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">REZ_BUILD_SOURCE_PATH</span><span class="p">}</span><span class="o">/</span><span class="n">python</span><span class="o">/</span><span class="n">myModule</span><span class="o">.</span><span class="n">py</span> <span class="o">&gt;</span> <span class="p">{</span><span class="n">REZ_BUILD_INSTALL_PATH</span><span class="p">}</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">demo</span><span class="o">/</span><span class="n">myModule</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
