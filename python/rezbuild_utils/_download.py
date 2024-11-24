@@ -56,17 +56,17 @@ def download_and_install_build(
             )
 
         # transfer from local machine to build target path
-        LOGGER.info(f"copying {download_path.name} to {project_install} ...")
+        LOGGER.info(f"copying '{download_path.name}' to '{project_install}' ...")
         shutil.copy2(download_path, zip_install_dir)
 
     finally:
-        LOGGER.info(f"removing temporary directory {temp_folder}")
+        LOGGER.info(f"removing temporary directory '{temp_folder}'")
         shutil.rmtree(temp_folder)
 
     zip_path = zip_install_dir / download_path.name
 
     if extract_if_zip and zip_path.suffix == ".zip":
-        LOGGER.info(f"extracting {zip_path} ...")
+        LOGGER.info(f"extracting '{zip_path}' ...")
         extract_zip(zip_path)
 
     return zip_install_dir

@@ -62,7 +62,7 @@ def copy_build_files(files: List[Path], target_directory: Optional[list[str]] = 
             file = source_dir / file
             file.absolute()
 
-        LOGGER.debug(f"copying {file} to {target_dir} ...")
+        LOGGER.debug(f"copying '{file}' to '{target_dir}' ...")
         if file.is_file():
             shutil.copy2(file, target_dir)
         else:
@@ -92,7 +92,7 @@ def copytree_to_build(src_dir: Path, show_progress: bool = True):
     def _callback(_path: Path, _index: int, _total: int):
         progress.set_progress(_index, new_maximum=_total)
 
-    LOGGER.debug(f"copying {src_dir} to {target_dir} ...")
+    LOGGER.debug(f"copying '{src_dir}' to '{target_dir}' ...")
     if progress:
         progress.start()
         copytree(src_dir, target_dir, callback=_callback)
@@ -125,9 +125,9 @@ def clear_build_dir():
     if not list(build_dir.glob("*")):
         return
 
-    LOGGER.debug(f"removing {build_dir}")
+    LOGGER.debug(f"removing '{build_dir}'")
     shutil.rmtree(build_dir, ignore_errors=True)
-    LOGGER.debug(f"creating {build_dir} again")
+    LOGGER.debug(f"creating '{build_dir}' again")
     build_dir.mkdir()
 
 
@@ -176,7 +176,7 @@ def copy_and_install_zip(
         if show_progress:
             progress.set_progress(_chunk * byte_to_MB, new_maximum=_total * byte_to_MB)
 
-    LOGGER.info(f"copying <{zip_path}> to <{target_path}> ...")
+    LOGGER.info(f"copying zip '{zip_path}' to '{target_path}' ...")
     progress.start() if progress else None
     copyfile(
         zip_path,
@@ -186,6 +186,6 @@ def copy_and_install_zip(
     )
     progress.end() if progress else None
 
-    LOGGER.info(f"extracting <{target_path}>")
+    LOGGER.info(f"extracting zip '{target_path}'")
     extract_zip(target_path, remove_zip=True)
     return target_dir

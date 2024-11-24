@@ -59,7 +59,9 @@ def install_pip_package(
     pip_download_dir = Path(tempfile.mkdtemp(prefix=f"rez_pip_{dir_prefix}"))
 
     try:
-        LOGGER.info(f"copying {rez_python_version} to {rez_local_packages_path} ...")
+        LOGGER.info(
+            f"copying '{rez_python_version}' to '{rez_local_packages_path}' ..."
+        )
         subprocess.run(
             [
                 "rez",
@@ -89,14 +91,14 @@ def install_pip_package(
             rez_pip_args += pip_args
 
         # XXX: we assume rez-pip2 is installed in rez own venv
-        LOGGER.debug(f"installing {pip_package} to {pip_download_dir} ...")
+        LOGGER.debug(f"installing '{pip_package}' to '{pip_download_dir}' ...")
         subprocess.run(rez_pip_args, check=True)
 
         # XXX: we assume rez-pip always put pip packages in a python/ folder
         pip_packages_content = list(pip_download_dir.glob("**/python/"))
 
         for pip_package_content in pip_packages_content:
-            LOGGER.info(f"copying {pip_package_content} to {target_dir} ...")
+            LOGGER.info(f"copying '{pip_package_content}' to '{target_dir}' ...")
             shutil.copytree(pip_package_content, target_dir, dirs_exist_ok=True)
 
     finally:
